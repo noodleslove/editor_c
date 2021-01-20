@@ -222,6 +222,11 @@ void move_cursor(char key) {
 			E.cy++;
 		break;	
 	}
+
+	row = (E.cy >= E.num_rows) ? NULL : &E.row[E.cy];
+	int rowlen = row ? row->size : 0;
+	if(E.cx > rowlen)
+		E.cx = rowlen;
 }
 
 void process_keypress(void) {
