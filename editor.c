@@ -204,12 +204,15 @@ void abuf_free(struct abuf *ab) {
 
 /*** input ***/
 void move_cursor(char key) {
+	erow *row = (E.cy >= E.num_rows) ? NULL : &E.row[E.cy];
+
 	switch(key) {
 	case ARROW_LEFT:
 		E.cx--;
 		break;
 	case ARROW_RIGHT:
-		E.cx++;
+		if(row && E.cx < row->size)
+			E.cx++;
 		break;
 	case ARROW_UP:
 		E.cy--;
