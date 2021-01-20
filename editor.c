@@ -208,14 +208,20 @@ void move_cursor(char key) {
 
 	switch(key) {
 	case ARROW_LEFT:
-		E.cx--;
+		if(E.cx != 0)
+			E.cx--;
+		else if(E.cy > 0) {
+			E.cy--;
+			E.cx = E.row[E.cy].size;
+		}
 		break;
 	case ARROW_RIGHT:
 		if(row && E.cx < row->size)
 			E.cx++;
 		break;
 	case ARROW_UP:
-		E.cy--;
+		if(E.cy != 0)
+			E.cy--;
 		break;
 	case ARROW_DOWN:
 		if(E.cy < E.num_rows)
