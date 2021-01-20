@@ -34,6 +34,7 @@ typedef struct erow {
 struct pconfig {
 	int cx, cy;
 	int rowoff;
+	int coloff;
 	int screen_rows;
 	int screen_cols;
 	int num_rows;
@@ -245,6 +246,10 @@ void editor_scroll() {
 		E.rowoff = E.cy;
 	if(E.cy >= E.rowoff + E.screen_rows)
 		E.rowoff = E.cy - E.screen_rows + 1;
+	if(E.cx < E.coloff)
+		E.coloff = E.cx;
+	if(E.cx >= E.coloff + E.screen_cols)
+		E.coloff = E.cx - E.screen_cols + 1;
 }
 
 void draw_row(struct abuf *ab) {
@@ -274,10 +279,12 @@ void draw_row(struct abuf *ab) {
 				abuf_append(ab, "~", 1);
 			}
 		} else {
-			int len = E.row[filerow].size;
+			int len = E.row[filerow].size - E.coloff;
+			if(len < 0)
+				len = 0;
 			if(len > E.screen_cols)
 				len = E.screen_cols;
-			abuf_append(ab, E.row[filerow].chars, len);
+			abuf_append(ab, &E.row[filerow].chars[E.coloff], len);
 		}
 		abuf_append(ab, "\x1b[K", 3);
 		if(y < E.screen_rows - 1)
@@ -296,7 +303,8 @@ void refresh_screen(void) {
 	draw_row(&ab);
 
 	char buffer[32];
-	snprintf(buffer, sizeof(buffer), "\x1b[%d;%dH", (E.cy - E.rowoff) + 1, E.cx + 1);
+	snprintf(buffer, sizeof(buffer), "\x1b[%d;%dH", (E.cy - E.rowoff) + 1, 
+																									(E.cx - E.coloff) + 1);
   	abuf_append(&ab, buffer, strlen(buffer));
 	
 	abuf_append(&ab, "\x1b[?25l", 6);
@@ -309,6 +317,7 @@ void editor_init(void) {
 	E.cx = 0;
 	E.cy = 0;
 	E.rowoff = 0;
+	E.coloff = 0;
 	E.num_rows = 0;
 	E.row = NULL;
 
