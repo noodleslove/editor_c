@@ -36,7 +36,7 @@
 
 ## Output:
 
-![alt text](Screen Shot 2021-02-26 at 8.55.31 AM.png)
+![alt text](output.png)
 
 # Reflections:
 
